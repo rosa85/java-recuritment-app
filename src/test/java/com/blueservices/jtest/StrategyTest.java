@@ -1,18 +1,16 @@
 package com.blueservices.jtest;
 
-import biz.application.Exception.NoRequiredFunds;
+import biz.application.Exceptions.InsufficientInvestmentAmountException;
+import biz.application.Exceptions.NoRequiredFundsException;
+import biz.application.Exceptions.NoStrategyException;
 import biz.application.Funds.Fund;
 import biz.application.Funds.FundType;
 import biz.application.Invests.InvestStrategy;
 import biz.application.Invests.InvestmentResult;
-import biz.application.Invests.Style;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 
 public class StrategyTest {
@@ -21,28 +19,61 @@ public class StrategyTest {
 
 
     @Before
-    public void setUp() {
+    public void setUp() throws NoStrategyException {
 
        Map<FundType, Integer> aggressiveConfiguration = new HashMap<>();
        aggressiveConfiguration.put(FundType.POLISH, 40);
        aggressiveConfiguration.put(FundType.FOREIGN, 20);
        aggressiveConfiguration.put(FundType.CASH, 40);
-       aggressiveStrategy = new InvestStrategy(aggressiveConfiguration, Style.AGGRESSIVE);
+       aggressiveStrategy = new InvestStrategy();
+       aggressiveStrategy.useStrategy(aggressiveConfiguration);
 
     }
 
-    @Test(expected=NoRequiredFunds.class)
-    public void shouldThrowExceptionBecauseNoRequiredFunds() throws NoRequiredFunds {
+    @Test(expected=NoStrategyException.class)
+    public void shouldThrowExceptionBecauseNoConfigurationStrategyFunds() throws Exception {
+        // given //when //then
+        aggressiveStrategy.useStrategy(null);
+    }
+
+    @Test(expected=NoRequiredFundsException.class)
+    public void shouldThrowExceptionBecauseNoRequiredFunds() throws Exception {
         // given
-        Set<Fund> funds = new HashSet<>();
+        List<Fund> funds = new ArrayList<>();
         Fund fund1 = new Fund(1, "Fundusz Polski 1", FundType.POLISH);
         funds.add(fund1);
         Fund fund2 = new Fund(2, "Fundusz Polski 2", FundType.POLISH);
         funds.add(fund2);
 
-        //when
+        //when //then
         InvestmentResult result = aggressiveStrategy.invest(10001, funds);
+        
+    }
 
-        //then
+    @Test(expected=NoRequiredFundsException.class)
+    public void shouldThrowExceptionBecauseFundsNull() throws Exception {
+        // given when then
+        InvestmentResult result = aggressiveStrategy.invest(1000, null);
+    }
+
+    @Test(expected = InsufficientInvestmentAmountException.class)
+    public void shouldThrowExceptionBecauseAmountIsZero() throws Exception {
+        // given
+        List<Fund> funds = new ArrayList<>();
+        Fund fund1 = new Fund(1, "Fundusz Polski 1", FundType.POLISH);
+        funds.add(fund1);
+        Fund fund2 = new Fund(2, "Fundusz Polski 2", FundType.POLISH);
+        funds.add(fund2);
+        Fund fund3 = new Fund(3, "Fundusz Polski 3", FundType.POLISH);
+        funds.add(fund3);
+        Fund fund4 = new Fund(4, "Fundusz Zagraniczny 2", FundType.FOREIGN);
+        funds.add(fund4);
+        Fund fund5 = new Fund(5, "Fundusz Zagraniczny 3", FundType.FOREIGN);
+        funds.add(fund5);
+        Fund fund6 = new Fund(6, "Fundusz Pieniężny 1", FundType.CASH);
+        funds.add(fund6);
+
+        //when
+        InvestmentResult result = aggressiveStrategy.invest(0, funds);
     }
 }

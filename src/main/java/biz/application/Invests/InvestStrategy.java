@@ -1,5 +1,7 @@
 package biz.application.Invests;
-import biz.application.Exception.NoRequiredFunds;
+import biz.application.Exceptions.InsufficientInvestmentAmountException;
+import biz.application.Exceptions.NoRequiredFundsException;
+import biz.application.Exceptions.NoStrategyException;
 import biz.application.Funds.Fund;
 import biz.application.Funds.FundType;
 import org.decimal4j.util.DoubleRounder;
@@ -7,36 +9,34 @@ import org.springframework.util.CollectionUtils;
 import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import static biz.application.Exception.ExceptionMessage.NO_REQUIRED_FUNDS_EXCEPTION;
-
 
 public class InvestStrategy {
 
-    private final Map<FundType, Integer> configuration;
-    private final Style style;
+    private  Map<FundType, Integer> configuration;
+    private int SUFFICIENT_INVESTMENT_AMOUNT = 1;
 
-    public InvestStrategy(Map<FundType, Integer> configuration, Style style) {
+    public void useStrategy(Map<FundType, Integer> configuration) throws NoStrategyException {
+        if(CollectionUtils.isEmpty(configuration))
+            throw new NoStrategyException();
         this.configuration = configuration;
-        this.style = style;
     }
 
 
     private Map<FundType, Integer> getConfiguration() {
-        if(!CollectionUtils.isEmpty(configuration))
             return configuration;
-        return Collections.EMPTY_MAP;
     }
 
-    public InvestmentResult invest(Integer amount, Set<Fund> funds) throws NoRequiredFunds {
-        Map<Fund, Integer> result = new HashMap<>();
+    public InvestmentResult invest(int amount, List<Fund> funds) throws NoRequiredFundsException, InsufficientInvestmentAmountException {
+        if(amount <= SUFFICIENT_INVESTMENT_AMOUNT) {
+            throw new InsufficientInvestmentAmountException();
+        }
+        List<FundResult> result = new ArrayList<>();
 
         for(FundType fundType : FundType.values()) {
             List<Fund> fundsByType = getFundsByType(fundType, funds);
 
             if (CollectionUtils.isEmpty(fundsByType)) {
-                throw new NoRequiredFunds(NO_REQUIRED_FUNDS_EXCEPTION);
+                throw new NoRequiredFundsException();
             }
 
             getResultByFundType(fundsByType, fundType, result, amount);
@@ -45,18 +45,21 @@ public class InvestStrategy {
         return getResultOfInvestment(amount, result);
     }
 
-    private InvestmentResult getResultOfInvestment(Integer amount, Map<Fund, Integer> result) {
-        Integer rest = amount -  result.values().stream().mapToInt(Number::intValue).sum();
+    private InvestmentResult getResultOfInvestment(Integer amount, List<FundResult> result) {
+        Integer rest = amount -  result.stream().mapToInt(el->el.getValue()).sum();
         return new InvestmentResult(result, amount, rest);
     }
 
-    private List<Fund> getFundsByType(FundType type, Set<Fund> funds){
+    private List<Fund> getFundsByType(FundType type, List<Fund> funds){
+        if(funds == null){
+            return Collections.EMPTY_LIST;
+        }
         return funds.stream().filter(fund -> {
             return fund.getFoundType().equals(type);
         }).collect(Collectors.toList());
     }
 
-    private void getResultByFundType(List<Fund> funds, FundType type, Map<Fund, Integer> result, Integer amount) {
+    private void getResultByFundType(List<Fund> funds, FundType type, List<FundResult> result, Integer amount) {
         Integer percentageByType = getConfiguration().get(type);
         double percentageByFund = percentageByType.doubleValue() / funds.size();
         percentageByFund = DoubleRounder.round(percentageByFund, 2, RoundingMode.FLOOR);
@@ -64,14 +67,14 @@ public class InvestStrategy {
         double valueByFund = amount * (percentageByFund / 100);
         double valueByFundRest = amount * ((percentageByFund + percentageByFundRest) / 100);
 
-        IntStream.range(0, funds.size()).forEach(i -> {
-            if (i == funds.size()-1) {
-                result.put(funds.get(i), (int) Math.floor(valueByFundRest));
+        for(int i=0; i < funds.size(); i++) {
+            if (i == 0) {
+                result.add(new FundResult(funds.get(i), percentageByFundRest + percentageByFund, (int) Math.floor(valueByFundRest)));
+            } else {
+                result.add(new FundResult(funds.get(i), percentageByFund, (int) Math.floor(valueByFund)));
             }
-            else {
-                result.put(funds.get(i), (int) Math.floor(valueByFund));
-            }
-        });
+        }
+
     }
 
 }

@@ -1,24 +1,23 @@
 package biz.application.Invests;
 
-import biz.application.Funds.Fund;
-
-import java.util.Map;
+import java.util.List;
 
 public class InvestmentResult {
 
-    private Map<Fund, Integer> result;
+    private List<FundResult> result;
 
     private Integer amountOfInvestment;
 
     private Integer rest;
 
-    public InvestmentResult(Map<Fund, Integer> result, Integer amountOfInvestment, Integer rest) {
+
+    public InvestmentResult(List<FundResult> result, Integer amountOfInvestment, Integer rest) {
         this.result = result;
         this.amountOfInvestment = amountOfInvestment;
         this.rest = rest;
     }
 
-    public Map<Fund, Integer> getResult() {
+    public List<FundResult> getResult() {
         return result;
     }
 

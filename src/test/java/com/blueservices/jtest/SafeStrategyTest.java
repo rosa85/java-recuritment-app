@@ -2,9 +2,10 @@
 package com.blueservices.jtest;
 
 import biz.application.Application;
+import biz.application.Exceptions.NoStrategyException;
+import biz.application.Invests.FundResult;
 import biz.application.Invests.InvestStrategy;
 import biz.application.Invests.InvestmentResult;
-import biz.application.Invests.Style;
 import biz.application.Funds.Fund;
 import biz.application.Funds.FundType;
 import org.junit.Before;
@@ -12,51 +13,32 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
+import java.util.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertTrue;
 
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
 public class SafeStrategyTest {
 
-
     private InvestStrategy safeStrategy;
 
-
     @Before
-    public void setUp() {
+    public void setUp() throws NoStrategyException {
        Map<FundType, Integer> safeConfiguration = new HashMap<>();
        safeConfiguration.put(FundType.POLISH, 20);
        safeConfiguration.put(FundType.FOREIGN, 75);
        safeConfiguration.put(FundType.CASH, 5);
-       safeStrategy = new InvestStrategy(safeConfiguration, Style.SAFE);
-
-     /*  Map<FundType, Integer> aggressiveConfiguration = new HashMap<>();
-       aggressiveConfiguration.put(FundType.POLISH, 40);
-       aggressiveConfiguration.put(FundType.FOREIGN, 20);
-       aggressiveConfiguration.put(FundType.CASH, 40);
-       aggressiveStrategy = new InvestStrategy(aggressiveConfiguration, Style.AGGRESSIVE);
-
-
-        Map<FundType, Integer> balancedConfiguration = new HashMap<>();
-        balancedConfiguration.put(FundType.POLISH, 30);
-        balancedConfiguration.put(FundType.FOREIGN, 60);
-        balancedConfiguration.put(FundType.CASH, 10);
-        balancedStrategy = new InvestStrategy(balancedConfiguration, Style.BALANCED);*/
+       safeStrategy = new InvestStrategy();
+       safeStrategy.useStrategy(safeConfiguration);
     }
-
 
     @Test
     public void setSafeStrategyTest1() throws Exception {
         // given
-        Set<Fund> funds = new HashSet<>();
+        List<Fund> funds = new ArrayList<>();
         Fund fund1 = new Fund(1, "Fundusz Polski 1", FundType.POLISH);
         funds.add(fund1);
         Fund fund2 = new Fund(2, "Fundusz Polski 2", FundType.POLISH);
@@ -74,23 +56,22 @@ public class SafeStrategyTest {
         InvestmentResult result = safeStrategy.invest(10000, funds);
 
         //then
-        Map<Fund, Integer> expected = new HashMap<Fund, Integer>();
-        expected.put(fund1, 1000);
-        expected.put(fund2, 1000);
-        expected.put(fund3, 2500);
-        expected.put(fund4, 2500);
-        expected.put(fund5, 2500);
-        expected.put(fund6, 500);
+        List<FundResult> expected = new ArrayList<>();
+        expected.add(new FundResult(fund1, 10.0, 1000));
+        expected.add(new FundResult(fund2, 10.0, 1000));
+        expected.add(new FundResult(fund3, 25.0, 2500));
+        expected.add(new FundResult(fund4, 25.0, 2500));
+        expected.add(new FundResult(fund5, 25.0, 2500));
+        expected.add(new FundResult(fund6, 5.0, 500));
 
-        assertThat(result.getResult(), equalTo(expected));
+        assertTrue(result.getResult().containsAll(expected));
         assertThat(result.getRest(), equalTo(0));
-
     }
 
     @Test
     public void setSafeStrategyTest2() throws Exception {
         // given
-        Set<Fund> funds = new HashSet<>();
+        List<Fund> funds = new ArrayList<>();
         Fund fund1 = new Fund(1, "Fundusz Polski 1", FundType.POLISH);
         funds.add(fund1);
         Fund fund2 = new Fund(2, "Fundusz Polski 2", FundType.POLISH);
@@ -108,15 +89,15 @@ public class SafeStrategyTest {
         InvestmentResult result = safeStrategy.invest(10001, funds);
 
         //then
-        Map<Fund, Integer> expected = new HashMap<Fund, Integer>();
-        expected.put(fund1, 1000);
-        expected.put(fund2, 1000);
-        expected.put(fund3, 2500);
-        expected.put(fund4, 2500);
-        expected.put(fund5, 2500);
-        expected.put(fund6, 500);
+        List<FundResult> expected = new ArrayList<>();
+        expected.add(new FundResult(fund1, 10.0,1000));
+        expected.add(new FundResult(fund2, 10.0, 1000));
+        expected.add(new FundResult(fund3, 25.0, 2500));
+        expected.add(new FundResult(fund4, 25.0, 2500));
+        expected.add(new FundResult(fund5, 25.0, 2500));
+        expected.add(new FundResult(fund6, 5.0, 500));
 
-        assertThat(result.getResult(), equalTo(expected));
+        assertTrue(result.getResult().containsAll(expected));
         assertThat(result.getRest(), equalTo(1));
 
     }
@@ -124,7 +105,7 @@ public class SafeStrategyTest {
     @Test
     public void setSafeStrategyTest3() throws Exception {
         // given
-        Set<Fund> funds = new HashSet<>();
+        List<Fund> funds = new ArrayList<>();
         Fund fund1 = new Fund(1, "Fundusz Polski 1", FundType.POLISH);
         funds.add(fund1);
         Fund fund2 = new Fund(2, "Fundusz Polski 2", FundType.POLISH);
@@ -142,15 +123,15 @@ public class SafeStrategyTest {
         InvestmentResult result = safeStrategy.invest(10000, funds);
 
         //then
-        Map<Fund, Integer> expected = new HashMap<>();
-        expected.put(fund1, 668);
-        expected.put(fund2, 666);
-        expected.put(fund3, 666);
-        expected.put(fund4, 3750);
-        expected.put(fund5, 3750);
-        expected.put(fund6, 500);
+        List<FundResult> expected = new ArrayList<>();
+        expected.add(new FundResult(fund1, 6.68, 668));
+        expected.add(new FundResult(fund2, 6.66, 666));
+        expected.add(new FundResult(fund3, 6.66, 666));
+        expected.add(new FundResult(fund4, 37.5, 3750));
+        expected.add(new FundResult(fund5, 37.5, 3750));
+        expected.add(new FundResult(fund6, 5, 500));
 
-        assertThat(result.getResult(), equalTo(expected));
+        assertTrue(result.getResult().containsAll(expected));
         assertThat(result.getRest(), equalTo(0));
 
     }
