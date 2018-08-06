@@ -24,12 +24,17 @@ public class AggressiveStrategyTest {
 
     @Before
     public void setUp() throws BadStrategyException {
-        Map<FundType, Integer> aggresiveConfiguration = new HashMap<>();
-        aggresiveConfiguration.put(FundType.POLISH, 40);
-        aggresiveConfiguration.put(FundType.FOREIGN, 20);
-        aggresiveConfiguration.put(FundType.CASH, 40);
+        Map<FundType, Integer> aggressiveConfiguration = getAggressiveConfiguration();
         safeStrategy = new InvestStrategy();
-        safeStrategy.useStrategy(aggresiveConfiguration);
+        safeStrategy.useStrategy(aggressiveConfiguration);
+    }
+
+    public static Map<FundType, Integer>  getAggressiveConfiguration(){
+        Map<FundType, Integer> aggressiveConfiguration = new HashMap<>();
+        aggressiveConfiguration.put(FundType.POLISH, 40);
+        aggressiveConfiguration.put(FundType.FOREIGN, 20);
+        aggressiveConfiguration.put(FundType.CASH, 40);
+        return aggressiveConfiguration;
     }
 
     @Test
@@ -66,7 +71,7 @@ public class AggressiveStrategyTest {
     }
 
     @Test
-    public void shouldCorrectlyDivideFloatingPointValues() throws Exception {
+    public void shouldReturnRestForUnDividedAmount() throws Exception {
         // given
         List<Fund> funds = new ArrayList<>();
         Fund fund1 = new Fund(1, "Fundusz Polski 1", FundType.POLISH);
@@ -100,7 +105,7 @@ public class AggressiveStrategyTest {
     }
 
     @Test
-    public void aggressiveStrategyTest3() throws Exception {
+    public void shouldCorrectlyDivideFloatingPointValues() throws Exception {
         // given
         List<Fund> funds = new ArrayList<>();
         Fund fund1 = new Fund(1, "Fundusz Polski 1", FundType.POLISH);

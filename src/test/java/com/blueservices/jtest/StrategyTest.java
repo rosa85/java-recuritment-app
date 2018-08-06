@@ -21,12 +21,9 @@ public class StrategyTest {
     @Before
     public void setUp() throws BadStrategyException {
 
-       Map<FundType, Integer> aggressiveConfiguration = new HashMap<>();
-       aggressiveConfiguration.put(FundType.POLISH, 40);
-       aggressiveConfiguration.put(FundType.FOREIGN, 20);
-       aggressiveConfiguration.put(FundType.CASH, 40);
+       Map<FundType, Integer> configuration = AggressiveStrategyTest.getAggressiveConfiguration();
        aggressiveStrategy = new InvestStrategy();
-       aggressiveStrategy.useStrategy(aggressiveConfiguration);
+       aggressiveStrategy.useStrategy(configuration);
 
     }
 
