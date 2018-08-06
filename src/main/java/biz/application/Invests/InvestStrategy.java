@@ -22,7 +22,7 @@ public class InvestStrategy {
         if(CollectionUtils.isEmpty(configuration)) {
             throw new BadStrategyException();
         }
-        
+
         int sum = configuration.values().stream().mapToInt(Number::intValue).sum();
         if(sum != DEFAULT_STRATEGY_TOTAL_INVESTMENT_PERCENT_VALUE) {
             throw new BadStrategyException();
@@ -94,7 +94,6 @@ public class InvestStrategy {
     public void setSufficientInvestmentAmount(int value) {
         SUFFICIENT_INVESTMENT_AMOUNT = value;
     }
-
 
     public static void setDefaultStrategyTotalInvestmentPercentValue(int value) {
         DEFAULT_STRATEGY_TOTAL_INVESTMENT_PERCENT_VALUE = value;
