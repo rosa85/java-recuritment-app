@@ -19,10 +19,11 @@ public class InvestStrategy {
     private static int DEFAULT_STRATEGY_TOTAL_INVESTMENT_PERCENT_VALUE = 100;
 
     public void useStrategy(Map<FundType, Integer> configuration) throws BadStrategyException {
-        if(CollectionUtils.isEmpty(configuration))
+        if(CollectionUtils.isEmpty(configuration)) {
             throw new BadStrategyException();
+        }
+        
         int sum = configuration.values().stream().mapToInt(Number::intValue).sum();
-
         if(sum != DEFAULT_STRATEGY_TOTAL_INVESTMENT_PERCENT_VALUE) {
             throw new BadStrategyException();
         }
