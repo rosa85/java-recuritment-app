@@ -25,15 +25,5 @@ public class Fund {
         return foundType;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
 
-        Fund fund = (Fund) o;
-
-        if (!ID.equals(fund.ID)) return false;
-        if (!name.equals(fund.name)) return false;
-        return foundType == fund.foundType;
-    }
 }

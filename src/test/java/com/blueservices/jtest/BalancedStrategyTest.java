@@ -1,38 +1,35 @@
-
 package com.blueservices.jtest;
 
-import biz.application.Application;
 import biz.application.Exceptions.BadStrategyException;
+import biz.application.Funds.Fund;
+import biz.application.Funds.FundType;
 import biz.application.Invests.FundResult;
 import biz.application.Invests.InvestStrategy;
 import biz.application.Invests.InvestmentResult;
-import biz.application.Funds.Fund;
-import biz.application.Funds.FundType;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertTrue;
 
+public class BalancedStrategyTest {
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class)
-public class SafeStrategyTest {
-
-    private InvestStrategy safeStrategy;
+    private InvestStrategy balancedStrategy;
 
     @Before
     public void setUp() throws BadStrategyException {
-       Map<FundType, Integer> safeConfiguration = new HashMap<>();
-       safeConfiguration.put(FundType.POLISH, 20);
-       safeConfiguration.put(FundType.FOREIGN, 75);
-       safeConfiguration.put(FundType.CASH, 5);
-       safeStrategy = new InvestStrategy();
-       safeStrategy.useStrategy(safeConfiguration);
+        Map<FundType, Integer> balancedConfiguration = new HashMap<>();
+        balancedConfiguration.put(FundType.POLISH, 30);
+        balancedConfiguration.put(FundType.FOREIGN, 60);
+        balancedConfiguration.put(FundType.CASH, 10);
+        balancedStrategy = new InvestStrategy();
+        balancedStrategy.useStrategy(balancedConfiguration);
     }
 
     @Test
@@ -53,20 +50,21 @@ public class SafeStrategyTest {
         funds.add(fund6);
 
         //when
-        InvestmentResult result = safeStrategy.invest(10000, funds);
+        InvestmentResult result = balancedStrategy.invest(10000, funds);
 
         //then
         List<FundResult> expected = new ArrayList<>();
-        expected.add(new FundResult(fund1, 10.0, 1000));
-        expected.add(new FundResult(fund2, 10.0, 1000));
-        expected.add(new FundResult(fund3, 25.0, 2500));
-        expected.add(new FundResult(fund4, 25.0, 2500));
-        expected.add(new FundResult(fund5, 25.0, 2500));
-        expected.add(new FundResult(fund6, 5.0, 500));
+        expected.add(new FundResult(fund1, 15.0, 1500));
+        expected.add(new FundResult(fund2, 15.0, 1500));
+        expected.add(new FundResult(fund3, 20.0, 2000));
+        expected.add(new FundResult(fund4, 20.0, 2000));
+        expected.add(new FundResult(fund5, 20.0, 2000));
+        expected.add(new FundResult(fund6, 10.0, 1000));
 
         assertTrue(result.getResult().containsAll(expected));
         assertThat(result.getRest(), equalTo(0));
     }
+
 
     @Test
     public void shouldReturnRestForUnDividedAmount() throws Exception {
@@ -86,16 +84,16 @@ public class SafeStrategyTest {
         funds.add(fund6);
 
         //when
-        InvestmentResult result = safeStrategy.invest(10001, funds);
+        InvestmentResult result = balancedStrategy.invest(10001, funds);
 
         //then
         List<FundResult> expected = new ArrayList<>();
-        expected.add(new FundResult(fund1, 10.0,1000));
-        expected.add(new FundResult(fund2, 10.0, 1000));
-        expected.add(new FundResult(fund3, 25.0, 2500));
-        expected.add(new FundResult(fund4, 25.0, 2500));
-        expected.add(new FundResult(fund5, 25.0, 2500));
-        expected.add(new FundResult(fund6, 5.0, 500));
+        expected.add(new FundResult(fund1, 15.0, 1500));
+        expected.add(new FundResult(fund2, 15.0, 1500));
+        expected.add(new FundResult(fund3, 20.0, 2000));
+        expected.add(new FundResult(fund4, 20.0, 2000));
+        expected.add(new FundResult(fund5, 20.0, 2000));
+        expected.add(new FundResult(fund6, 10.0, 1000));
 
         assertTrue(result.getResult().containsAll(expected));
         assertThat(result.getRest(), equalTo(1));
@@ -120,20 +118,21 @@ public class SafeStrategyTest {
         funds.add(fund6);
 
         //when
-        InvestmentResult result = safeStrategy.invest(10000, funds);
+        InvestmentResult result = balancedStrategy.invest(10000, funds);
 
         //then
         List<FundResult> expected = new ArrayList<>();
-        expected.add(new FundResult(fund1, 6.68, 668));
-        expected.add(new FundResult(fund2, 6.66, 666));
-        expected.add(new FundResult(fund3, 6.66, 666));
-        expected.add(new FundResult(fund4, 37.5, 3750));
-        expected.add(new FundResult(fund5, 37.5, 3750));
-        expected.add(new FundResult(fund6, 5, 500));
+        expected.add(new FundResult(fund1, 10.0, 1000));
+        expected.add(new FundResult(fund2, 10.0, 1000));
+        expected.add(new FundResult(fund3, 10.0, 1000));
+        expected.add(new FundResult(fund4, 30.0, 3000));
+        expected.add(new FundResult(fund5, 30.0, 3000));
+        expected.add(new FundResult(fund6, 10.0, 1000));
 
         assertTrue(result.getResult().containsAll(expected));
         assertThat(result.getRest(), equalTo(0));
 
     }
+
 
 }

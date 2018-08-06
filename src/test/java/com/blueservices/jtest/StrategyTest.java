@@ -2,7 +2,7 @@ package com.blueservices.jtest;
 
 import biz.application.Exceptions.InsufficientInvestmentAmountException;
 import biz.application.Exceptions.NoRequiredFundsException;
-import biz.application.Exceptions.NoStrategyException;
+import biz.application.Exceptions.BadStrategyException;
 import biz.application.Funds.Fund;
 import biz.application.Funds.FundType;
 import biz.application.Invests.InvestStrategy;
@@ -19,7 +19,7 @@ public class StrategyTest {
 
 
     @Before
-    public void setUp() throws NoStrategyException {
+    public void setUp() throws BadStrategyException {
 
        Map<FundType, Integer> aggressiveConfiguration = new HashMap<>();
        aggressiveConfiguration.put(FundType.POLISH, 40);
@@ -30,7 +30,7 @@ public class StrategyTest {
 
     }
 
-    @Test(expected=NoStrategyException.class)
+    @Test(expected=BadStrategyException.class)
     public void shouldThrowExceptionBecauseNoConfigurationStrategyFunds() throws Exception {
         // given //when //then
         aggressiveStrategy.useStrategy(null);

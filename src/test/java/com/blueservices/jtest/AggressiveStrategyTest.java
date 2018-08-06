@@ -1,38 +1,35 @@
-
 package com.blueservices.jtest;
 
-import biz.application.Application;
 import biz.application.Exceptions.BadStrategyException;
+import biz.application.Funds.Fund;
+import biz.application.Funds.FundType;
 import biz.application.Invests.FundResult;
 import biz.application.Invests.InvestStrategy;
 import biz.application.Invests.InvestmentResult;
-import biz.application.Funds.Fund;
-import biz.application.Funds.FundType;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertTrue;
 
-
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class)
-public class SafeStrategyTest {
+public class AggressiveStrategyTest {
 
     private InvestStrategy safeStrategy;
 
     @Before
     public void setUp() throws BadStrategyException {
-       Map<FundType, Integer> safeConfiguration = new HashMap<>();
-       safeConfiguration.put(FundType.POLISH, 20);
-       safeConfiguration.put(FundType.FOREIGN, 75);
-       safeConfiguration.put(FundType.CASH, 5);
-       safeStrategy = new InvestStrategy();
-       safeStrategy.useStrategy(safeConfiguration);
+        Map<FundType, Integer> aggresiveConfiguration = new HashMap<>();
+        aggresiveConfiguration.put(FundType.POLISH, 40);
+        aggresiveConfiguration.put(FundType.FOREIGN, 20);
+        aggresiveConfiguration.put(FundType.CASH, 40);
+        safeStrategy = new InvestStrategy();
+        safeStrategy.useStrategy(aggresiveConfiguration);
     }
 
     @Test
@@ -57,19 +54,19 @@ public class SafeStrategyTest {
 
         //then
         List<FundResult> expected = new ArrayList<>();
-        expected.add(new FundResult(fund1, 10.0, 1000));
-        expected.add(new FundResult(fund2, 10.0, 1000));
-        expected.add(new FundResult(fund3, 25.0, 2500));
-        expected.add(new FundResult(fund4, 25.0, 2500));
-        expected.add(new FundResult(fund5, 25.0, 2500));
-        expected.add(new FundResult(fund6, 5.0, 500));
+        expected.add(new FundResult(fund1, 20.0, 2000));
+        expected.add(new FundResult(fund2, 20.0, 2000));
+        expected.add(new FundResult(fund3, 6.68, 668));
+        expected.add(new FundResult(fund4, 6.66, 666));
+        expected.add(new FundResult(fund5, 6.66, 666));
+        expected.add(new FundResult(fund6, 40.0, 4000));
 
         assertTrue(result.getResult().containsAll(expected));
         assertThat(result.getRest(), equalTo(0));
     }
 
     @Test
-    public void shouldReturnRestForUnDividedAmount() throws Exception {
+    public void shouldCorrectlyDivideFloatingPointValues() throws Exception {
         // given
         List<Fund> funds = new ArrayList<>();
         Fund fund1 = new Fund(1, "Fundusz Polski 1", FundType.POLISH);
@@ -90,12 +87,12 @@ public class SafeStrategyTest {
 
         //then
         List<FundResult> expected = new ArrayList<>();
-        expected.add(new FundResult(fund1, 10.0,1000));
-        expected.add(new FundResult(fund2, 10.0, 1000));
-        expected.add(new FundResult(fund3, 25.0, 2500));
-        expected.add(new FundResult(fund4, 25.0, 2500));
-        expected.add(new FundResult(fund5, 25.0, 2500));
-        expected.add(new FundResult(fund6, 5.0, 500));
+        expected.add(new FundResult(fund1, 20.0, 2000));
+        expected.add(new FundResult(fund2, 20.0, 2000));
+        expected.add(new FundResult(fund3, 6.68, 668));
+        expected.add(new FundResult(fund4, 6.66, 666));
+        expected.add(new FundResult(fund5, 6.66, 666));
+        expected.add(new FundResult(fund6, 40.0, 4000));
 
         assertTrue(result.getResult().containsAll(expected));
         assertThat(result.getRest(), equalTo(1));
@@ -103,7 +100,7 @@ public class SafeStrategyTest {
     }
 
     @Test
-    public void shouldCorrectlyDivideFloatingPointValues() throws Exception {
+    public void aggressiveStrategyTest3() throws Exception {
         // given
         List<Fund> funds = new ArrayList<>();
         Fund fund1 = new Fund(1, "Fundusz Polski 1", FundType.POLISH);
@@ -124,16 +121,15 @@ public class SafeStrategyTest {
 
         //then
         List<FundResult> expected = new ArrayList<>();
-        expected.add(new FundResult(fund1, 6.68, 668));
-        expected.add(new FundResult(fund2, 6.66, 666));
-        expected.add(new FundResult(fund3, 6.66, 666));
-        expected.add(new FundResult(fund4, 37.5, 3750));
-        expected.add(new FundResult(fund5, 37.5, 3750));
-        expected.add(new FundResult(fund6, 5, 500));
+        expected.add(new FundResult(fund1, 13.34, 1334));
+        expected.add(new FundResult(fund2, 13.33, 1333));
+        expected.add(new FundResult(fund3, 13.33, 1333));
+        expected.add(new FundResult(fund4, 10, 1000));
+        expected.add(new FundResult(fund5, 10, 1000));
+        expected.add(new FundResult(fund6, 40, 4000));
 
         assertTrue(result.getResult().containsAll(expected));
         assertThat(result.getRest(), equalTo(0));
 
     }
-
 }
