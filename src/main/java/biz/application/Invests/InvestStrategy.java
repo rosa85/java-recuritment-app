@@ -19,10 +19,7 @@ public class InvestStrategy {
     private static int DEFAULT_STRATEGY_TOTAL_INVESTMENT_PERCENT_VALUE = 100;
 
     public void useStrategy(Map<FundType, Integer> configuration) throws BadStrategyException {
-        if(CollectionUtils.isEmpty(configuration)) {
-            throw new BadStrategyException();
-        }
-
+        assertNotEmptyConfiguration(configuration);
         int sum = configuration.values().stream().mapToInt(Number::intValue).sum();
         if(sum != DEFAULT_STRATEGY_TOTAL_INVESTMENT_PERCENT_VALUE) {
             throw new BadStrategyException();
@@ -31,8 +28,15 @@ public class InvestStrategy {
         this.configuration = configuration;
     }
 
-    private Map<FundType, Integer> getConfiguration() {
-            return configuration;
+    private Map<FundType, Integer> getConfiguration() throws BadStrategyException {
+        assertNotEmptyConfiguration(configuration);
+        return configuration;
+    }
+
+    private void assertNotEmptyConfiguration(Map<FundType, Integer> configuration) throws BadStrategyException {
+        if(CollectionUtils.isEmpty(configuration)) {
+            throw new BadStrategyException();
+        }
     }
 
     public InvestmentResult invest(int amount, List<Fund> funds) throws NoRequiredFundsException, InsufficientInvestmentAmountException {
@@ -70,7 +74,7 @@ public class InvestStrategy {
         ).collect(Collectors.toList());
     }
 
-    private List<FundResult> getInvestResultForFundType(List<Fund> funds, FundType type, Integer amount) {
+    private List<FundResult> getInvestResultForFundType(List<Fund> funds, FundType type, Integer amount) throws BadStrategyException {
         List<FundResult> result = new ArrayList<>();
         Integer percentForFundType = getConfiguration().get(type);
         double percentPerFund = percentForFundType.doubleValue() / funds.size();
