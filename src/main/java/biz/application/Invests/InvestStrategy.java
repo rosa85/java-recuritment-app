@@ -12,13 +12,13 @@ import java.util.stream.Collectors;
 
 public class InvestStrategy {
 
-    private  Map<FundType, Integer> configuration;
+    private  final Map<FundType, Integer> configuration;
     private static int SUFFICIENT_INVESTMENT_AMOUNT = 1;
     private static final int NUMBER_OF_DECIMAL_PLACES = 2;
     private static final int FIRST_ELEMENT_OF_LIST = 0;
     private static int DEFAULT_STRATEGY_TOTAL_INVESTMENT_PERCENT_VALUE = 100;
 
-    public void useStrategy(Map<FundType, Integer> configuration) throws BadStrategyException {
+    public InvestStrategy(Map<FundType, Integer> configuration) throws BadStrategyException {
         assertNotEmptyConfiguration(configuration);
         int sum = configuration.values().stream().mapToInt(Number::intValue).sum();
         if(sum != DEFAULT_STRATEGY_TOTAL_INVESTMENT_PERCENT_VALUE) {
@@ -28,8 +28,7 @@ public class InvestStrategy {
         this.configuration = configuration;
     }
 
-    private Map<FundType, Integer> getConfiguration() throws BadStrategyException {
-        assertNotEmptyConfiguration(configuration);
+    private Map<FundType, Integer> getConfiguration()   {
         return configuration;
     }
 
@@ -74,7 +73,7 @@ public class InvestStrategy {
         ).collect(Collectors.toList());
     }
 
-    private List<FundResult> getInvestResultForFundType(List<Fund> funds, FundType type, Integer amount) throws BadStrategyException {
+    private List<FundResult> getInvestResultForFundType(List<Fund> funds, FundType type, Integer amount) {
         List<FundResult> result = new ArrayList<>();
         Integer percentForFundType = getConfiguration().get(type);
         double percentPerFund = percentForFundType.doubleValue() / funds.size();

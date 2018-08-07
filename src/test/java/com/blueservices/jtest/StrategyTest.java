@@ -22,15 +22,14 @@ public class StrategyTest {
     public void setUp() throws BadStrategyException {
 
        Map<FundType, Integer> configuration = AggressiveStrategyTest.getAggressiveConfiguration();
-       aggressiveStrategy = new InvestStrategy();
-       aggressiveStrategy.useStrategy(configuration);
+       aggressiveStrategy = new InvestStrategy(configuration);
 
     }
 
     @Test(expected=BadStrategyException.class)
     public void shouldThrowExceptionBecauseNoConfigurationStrategyFunds() throws Exception {
         // given //when //then
-        aggressiveStrategy.useStrategy(null);
+        aggressiveStrategy = new InvestStrategy(null);
     }
 
     @Test(expected=NoRequiredFundsException.class)

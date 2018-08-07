@@ -31,8 +31,7 @@ public class SafeStrategyTest {
        safeConfiguration.put(FundType.POLISH, 20);
        safeConfiguration.put(FundType.FOREIGN, 75);
        safeConfiguration.put(FundType.CASH, 5);
-       safeStrategy = new InvestStrategy();
-       safeStrategy.useStrategy(safeConfiguration);
+       safeStrategy = new InvestStrategy(safeConfiguration);
     }
 
     @Test

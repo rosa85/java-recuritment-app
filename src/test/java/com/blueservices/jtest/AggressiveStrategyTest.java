@@ -25,8 +25,7 @@ public class AggressiveStrategyTest {
     @Before
     public void setUp() throws BadStrategyException {
         Map<FundType, Integer> aggressiveConfiguration = getAggressiveConfiguration();
-        safeStrategy = new InvestStrategy();
-        safeStrategy.useStrategy(aggressiveConfiguration);
+        safeStrategy = new InvestStrategy(aggressiveConfiguration);
     }
 
     public static Map<FundType, Integer>  getAggressiveConfiguration(){

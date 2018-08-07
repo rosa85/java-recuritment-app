@@ -28,8 +28,7 @@ public class BalancedStrategyTest {
         balancedConfiguration.put(FundType.POLISH, 30);
         balancedConfiguration.put(FundType.FOREIGN, 60);
         balancedConfiguration.put(FundType.CASH, 10);
-        balancedStrategy = new InvestStrategy();
-        balancedStrategy.useStrategy(balancedConfiguration);
+        balancedStrategy = new InvestStrategy(balancedConfiguration);
     }
 
     @Test
